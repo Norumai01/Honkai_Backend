@@ -25,6 +25,7 @@ public class UserController {
     private FileStorageService fileStorageService;
 
     // Everyone is whose authenticated can use these http methods.
+    // First two methods might be debatable.
 
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {

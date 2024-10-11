@@ -32,6 +32,7 @@ public class PostService {
         return postRepository.findByUserId(userId);
     }
 
+    // Could be thrown away.
     public Post createPost(Post post) {
         return postRepository.save(post);
     }

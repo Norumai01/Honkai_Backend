@@ -53,7 +53,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/users/**", "/api/files/**", "/api/posts/**").authenticated()
                 .anyRequest().permitAll()
                 )
+                // Enable Basic Auth.
                 .httpBasic(Customizer.withDefaults())
+                // Authorize roles to users.
                 .userDetailsService(userDetailsService);
         return http.build();
     }

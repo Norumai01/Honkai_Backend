@@ -24,7 +24,7 @@ public class User {
     @Column(name = "Username", nullable = false, unique = true, length = 50)
     private String username;
 
-    @Column(name = "Email", nullable = false, unique = true, length = 75)
+    @Column(name = "Email", nullable = false, unique = true, length = 320)
     private String email;
 
     // Ignore password in JSON.
@@ -32,10 +32,10 @@ public class User {
     @Column(name = "Password", nullable = false, length = 75)
     private String password;
 
-    @Column(name = "ProfileURL")
+    @Column(name = "ProfileURL", length = 500)
     private String profilePictureURL;
 
-    @Column(length = 250)
+    @Column(length = 500)
     private String bio;
 
     // They can have more than one role.

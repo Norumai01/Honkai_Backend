@@ -10,6 +10,9 @@ public class WebConfig implements WebMvcConfigurer {
     // Necessary for uploading files to API.
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+
+        // Mapping an external URI path to be uses as resource by Spring Boot.
+        // https://www.baeldung.com/spring-mvc-static-resources
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:uploads/");
     }
