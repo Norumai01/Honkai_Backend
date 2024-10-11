@@ -7,13 +7,13 @@ import com.socialmediahonkai.honkaiwebsite.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/users")
@@ -23,6 +23,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private FileStorageService fileStorageService;
+
+    // Everyone is whose authenticated can use these http methods.
 
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
@@ -49,6 +51,33 @@ public class UserController {
         User createdUser = userService.createUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
+
+    // Upload and set user profile picture with its URL attribute.
+    // Testing API, the key is the requestParam -> profile.
+    @PostMapping("/{userId}/profile-pic")
+    public ResponseEntity<User> changeProfilePic(@PathVariable Long userId, @RequestParam("profile") MultipartFile profile) {
+        if (!userService.getUserById(userId).isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Allowed file types
+        final List<String> allowMimeTypes = List.of("image/jpeg", "image/jpg", "image/png", "image/webp");
+        String fileType = profile.getContentType();
+        if (!allowMimeTypes.contains(fileType) || fileType == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        String fileName = fileStorageService.storeFile(profile);
+        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("api/files/")
+                .path(fileName)
+                .toUriString();
+
+        User updatedUser = userService.updateProfilePicture(userId, fileDownloadUri);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+    // API Endpoints usable by Admin Role.
 
     @PostMapping("/createAdmin")
     public ResponseEntity<User> createAdmin(@RequestBody User user) {
@@ -80,49 +109,26 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    // Fix this.
-    // Change role to a user.
-    @PostMapping("/{userId}/roles")
-    public ResponseEntity<User> changeRoleToUser(@PathVariable Long userId, @RequestBody RoleRequest roleRequest) {
-        if (!userService.getUserById(userId).isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
-        User updatedUser = userService.changeRoletoUser(userId, roleRequest.getRole());
+    @PostMapping("/{userId}/roles/{role}")
+    public ResponseEntity<User> addRoleToUser(@PathVariable Long userId, @PathVariable Role role) {
+        User updatedUser = userService.addRoleToUser(userId, role);
         return ResponseEntity.ok(updatedUser);
     }
 
-    // Static class for a return method for role as it needs Role.***.
-    public static class RoleRequest {
-        private Role role;
-
-        public Role getRole() {
-            return role;
-        }
-    }
-
-    // Upload and set user profile picture with its URL attribute.
-    // Testing API, the key is the requestParam -> profile.
-    @PostMapping("/{userId}/profile-pic")
-    public ResponseEntity<User> changeProfilePic(@PathVariable Long userId, @RequestParam("profile") MultipartFile profile) {
-        if (!userService.getUserById(userId).isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        // Allowed file types
-        final List<String> allowMimeTypes = List.of("image/jpeg", "image/jpg", "image/png", "image/webp");
-        String fileType = profile.getContentType();
-        if (!allowMimeTypes.contains(fileType) || fileType == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        String fileName = fileStorageService.storeFile(profile);
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("api/files/")
-                .path(fileName)
-                .toUriString();
-
-        User updatedUser = userService.updateProfilePicture(userId, fileDownloadUri);
+    @DeleteMapping("/{userId}/roles/{role}")
+    public ResponseEntity<User> deleteRoleFromUser(@PathVariable Long userId, @PathVariable Role role) {
+        User updatedUser = userService.removeRoleToUser(userId, role);
         return ResponseEntity.ok(updatedUser);
     }
 
+    // TODO: Fix this, cannot deserialize values.
+    // Change bulk role to a user.
+    @PutMapping("/{userId}/roles")
+    public ResponseEntity<User> changeRoleToUser(@PathVariable Long userId, @RequestBody Set<Role> roles) {
+        if (!userService.getUserById(userId).isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+        User updatedUser = userService.changeRoletoUser(userId, roles);
+        return ResponseEntity.ok(updatedUser);
+    }
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class UserService {
@@ -36,14 +37,15 @@ public class UserService {
 
     public User createUser(User user) {
         // Assign default user role to Consumer for new users.
-        user.setRole(Role.CONSUMER);
+        user.addRole(Role.CONSUMER);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
     public User createAdminUser(User user) {
         // Add both consumer and admin to Admin users.
-        user.setRole(Role.ADMIN);
+        user.addRole(Role.CONSUMER);
+        user.addRole(Role.ADMIN);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
@@ -80,14 +82,33 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
-    public User changeRoletoUser(Long userId, Role role) {
+    public User addRoleToUser(Long userId, Role role) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        user.setRole(role);
+        user.addRole(role);
         return userRepository.save(user);
     }
 
+    public User removeRoleToUser(Long userId, Role role) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.removeRole(role);
+        return userRepository.save(user);
+    }
+
+    // TODO: Fix this.
+    // Bulk updates if necessary.
+    public User changeRoletoUser(Long userId, Set<Role> roles) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setRoles(roles);
+        return userRepository.save(user);
+    }
+
+    // Allows users to change their profile picture.
     public User updateProfilePicture(Long userId, String profilePictureURL) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));

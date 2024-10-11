@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Table(name = "Post_Likes")
 public class Like {
 
+    // Tracks how many likes are on the post, by users.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,4 +25,10 @@ public class Like {
 
     @Column(nullable = false)
     private LocalDateTime likedAt;
+
+    // Creating an account, will automatically set to the local time.
+    @PrePersist
+    protected void onCreate() {
+        this.likedAt= LocalDateTime.now();
+    }
 }

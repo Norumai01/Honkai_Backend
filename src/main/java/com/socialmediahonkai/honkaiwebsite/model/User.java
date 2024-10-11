@@ -1,5 +1,8 @@
 package com.socialmediahonkai.honkaiwebsite.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -13,6 +16,7 @@ import java.util.HashSet;
 @Table(name = "Users")
 public class User {
 
+    // Entity to hold social media user account.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,6 +27,8 @@ public class User {
     @Column(name = "Email", nullable = false, unique = true, length = 75)
     private String email;
 
+    // Ignore password in JSON.
+    @JsonIgnore
     @Column(name = "Password", nullable = false, length = 75)
     private String password;
 
@@ -32,18 +38,32 @@ public class User {
     @Column(length = 250)
     private String bio;
 
-    @Column(name = "Role", nullable = false)
+    // They can have more than one role.
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private Set<Role> roles = new HashSet<>();
 
+    // Using Post entity, we will manage how it output on JSON.
+    @JsonManagedReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Post> posts;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    // Creating an account, will automatically set to the local time.
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
+    }
+
+    // Custom Methods:
+    public void addRole(Role role) {
+        roles.add(role);
+    }
+
+    public void removeRole(Role role) {
+        roles.remove(role);
     }
 }

@@ -19,6 +19,7 @@ public class FileStorageService {
 
     private final Path fileStorageLocation;
 
+    // At constructor, set the default location. If directory doesn't exist, make the director.
     public FileStorageService(@Value("${file.upload-dir}") String uploadDir) {
         this.fileStorageLocation = Paths.get(uploadDir)
                 .toAbsolutePath().normalize();
@@ -31,6 +32,7 @@ public class FileStorageService {
         }
     }
 
+    // Store the uploaded files, with a unique name.
     public String storeFile(MultipartFile file) {
         String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
 
@@ -44,6 +46,7 @@ public class FileStorageService {
         }
     }
 
+    // Load the stored file to view the file (or image).
     public Resource loadFileAsResource(String fileName) {
         try {
             Path filePath = this.fileStorageLocation.resolve(fileName).normalize();

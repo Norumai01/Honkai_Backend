@@ -17,6 +17,9 @@ public class FileController {
     @Autowired
     private FileStorageService fileStorageService;
 
+    // Everyone whose is authenticated can use these APIs.
+
+    // Get any files that is already uploaded, as long as it matches fileName.
     @GetMapping("/{fileName:.+}")
     public ResponseEntity<Resource> getUploadedFile(@PathVariable String fileName, HttpServletRequest request) {
         Resource resource = fileStorageService.loadFileAsResource(fileName);

@@ -1,7 +1,13 @@
 package com.socialmediahonkai.honkaiwebsite.config;
 
+import com.socialmediahonkai.honkaiwebsite.service.CustomUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -15,24 +21,44 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
+    private CustomUserDetailsService userDetailsService;
+
+    public SecurityConfig(CustomUserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+    
+    // Password encoder.
     @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
+    BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    // Authenticate and authorize specific API usages to users.
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .authorizeHttpRequests((requests) -> requests.anyRequest().permitAll()
-            );
-
+            .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                .requestMatchers("/api/users/createUser", "/api/users/{userId}/profile-pic").permitAll()
+                .requestMatchers("/api/files/{fileName:.+}").permitAll()
+                .requestMatchers("/api/posts/**").permitAll()
+                .requestMatchers("/api/users/createAdmin","/api/users/{userId}/roles", "/api/users/{userId}/roles/{role}").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/users/{userId}").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/users/{userId}").hasRole("ADMIN")
+                .requestMatchers("/api/posts").hasRole("ADMIN")
+                .requestMatchers("/api/users/**", "/api/files/**", "/api/posts/**").authenticated()
+                .anyRequest().permitAll()
+                )
+                .httpBasic(Customizer.withDefaults())
+                .userDetailsService(userDetailsService);
         return http.build();
     }
 
+    // Allows cross-origin, which communicate with other framework of frontend by the given permissions.
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
