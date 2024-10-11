@@ -3,6 +3,7 @@ package com.socialmediahonkai.honkaiwebsite.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -27,8 +28,8 @@ public class User {
     @Column(name = "Email", nullable = false, unique = true, length = 320)
     private String email;
 
-    // Ignore password in JSON.
-    @JsonIgnore
+    // Ignore password in JSON output. Allows the password to be read from inputs.
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "Password", nullable = false, length = 75)
     private String password;
 
