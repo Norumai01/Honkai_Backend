@@ -13,6 +13,7 @@ import java.util.HashSet;
 @Table(name = "Users")
 public class User {
 
+    // Entity to hold social media user account.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,6 +33,7 @@ public class User {
     @Column(length = 250)
     private String bio;
 
+    // They can have more than one role.
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
@@ -43,6 +45,7 @@ public class User {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    // Creating an account, will automatically set to the local time.
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();

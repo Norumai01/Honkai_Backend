@@ -30,11 +30,13 @@ public class SecurityConfig {
         this.userDetailsService = userDetailsService;
     }
     
+    // Password encoder.
     @Bean
     BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    // Authenticate and authorize specific API usages to users.
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -54,6 +56,7 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // Allows cross-origin, which communicate with other framework of frontend by the given permissions.
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();

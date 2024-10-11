@@ -11,6 +11,7 @@ import java.util.List;
 @Table(name = "Posts")
 public class Post {
 
+    // Holds the entity, serving for user posts.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,4 +33,10 @@ public class Post {
 
     @Column(nullable = false)
     private LocalDateTime postAt;
+
+    // Creating an account, will automatically set to the local time.
+    @PrePersist
+    protected void onCreate() {
+        this.postAt = LocalDateTime.now();
+    }
 }

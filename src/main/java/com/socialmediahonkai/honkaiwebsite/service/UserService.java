@@ -98,6 +98,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    // TODO: Fix this.
     // Bulk updates if necessary.
     public User changeRoletoUser(Long userId, Set<Role> roles) {
         User user = userRepository.findById(userId)
@@ -107,6 +108,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    // Allows users to change their profile picture.
     public User updateProfilePicture(Long userId, String profilePictureURL) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));

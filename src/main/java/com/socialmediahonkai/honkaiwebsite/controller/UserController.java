@@ -24,6 +24,8 @@ public class UserController {
     @Autowired
     private FileStorageService fileStorageService;
 
+    // Everyone is whose authenticated can use these http methods.
+
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
@@ -49,6 +51,33 @@ public class UserController {
         User createdUser = userService.createUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
+
+    // Upload and set user profile picture with its URL attribute.
+    // Testing API, the key is the requestParam -> profile.
+    @PostMapping("/{userId}/profile-pic")
+    public ResponseEntity<User> changeProfilePic(@PathVariable Long userId, @RequestParam("profile") MultipartFile profile) {
+        if (!userService.getUserById(userId).isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Allowed file types
+        final List<String> allowMimeTypes = List.of("image/jpeg", "image/jpg", "image/png", "image/webp");
+        String fileType = profile.getContentType();
+        if (!allowMimeTypes.contains(fileType) || fileType == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        String fileName = fileStorageService.storeFile(profile);
+        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("api/files/")
+                .path(fileName)
+                .toUriString();
+
+        User updatedUser = userService.updateProfilePicture(userId, fileDownloadUri);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+    // API Endpoints usable by Admin Role.
 
     @PostMapping("/createAdmin")
     public ResponseEntity<User> createAdmin(@RequestBody User user) {
@@ -103,29 +132,6 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
 
-    // Upload and set user profile picture with its URL attribute.
-    // Testing API, the key is the requestParam -> profile.
-    @PostMapping("/{userId}/profile-pic")
-    public ResponseEntity<User> changeProfilePic(@PathVariable Long userId, @RequestParam("profile") MultipartFile profile) {
-        if (!userService.getUserById(userId).isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
 
-        // Allowed file types
-        final List<String> allowMimeTypes = List.of("image/jpeg", "image/jpg", "image/png", "image/webp");
-        String fileType = profile.getContentType();
-        if (!allowMimeTypes.contains(fileType) || fileType == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        String fileName = fileStorageService.storeFile(profile);
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("api/files/")
-                .path(fileName)
-                .toUriString();
-
-        User updatedUser = userService.updateProfilePicture(userId, fileDownloadUri);
-        return ResponseEntity.ok(updatedUser);
-    }
 
 }

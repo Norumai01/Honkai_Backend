@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Table(name = "Post_Comments")
 public class Comment {
 
+    // Make comment on post, by users.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,4 +28,10 @@ public class Comment {
 
     @Column(nullable = false)
     private LocalDateTime commentAt;
+
+    // Creating an account, will automatically set to the local time.
+    @PrePersist
+    protected void onCreate() {
+        this.commentAt= LocalDateTime.now();
+    }
 }
