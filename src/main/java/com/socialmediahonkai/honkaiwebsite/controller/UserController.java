@@ -131,7 +131,4 @@ public class UserController {
         User updatedUser = userService.changeRoletoUser(userId, roles);
         return ResponseEntity.ok(updatedUser);
     }
-
-
-
 }
