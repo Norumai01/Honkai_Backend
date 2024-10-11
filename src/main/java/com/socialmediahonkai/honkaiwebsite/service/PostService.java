@@ -28,10 +28,6 @@ public class PostService {
         return postRepository.findById(id);
     }
 
-    public List<Post> getPostsByUsername(String username) {
-        return postRepository.findByUsername(username);
-    }
-
     public List<Post> getPostsByUserId(Long userId) {
         return postRepository.findByUserId(userId);
     }

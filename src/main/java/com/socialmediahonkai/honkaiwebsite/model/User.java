@@ -1,5 +1,8 @@
 package com.socialmediahonkai.honkaiwebsite.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -24,6 +27,8 @@ public class User {
     @Column(name = "Email", nullable = false, unique = true, length = 75)
     private String email;
 
+    // Ignore password in JSON.
+    @JsonIgnore
     @Column(name = "Password", nullable = false, length = 75)
     private String password;
 
@@ -39,6 +44,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Set<Role> roles = new HashSet<>();
 
+    // Using Post entity, we will manage how it output on JSON.
+    @JsonManagedReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Post> posts;
 

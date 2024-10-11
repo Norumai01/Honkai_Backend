@@ -45,10 +45,12 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                 .requestMatchers("/api/users/createUser", "/api/users/{userId}/profile-pic").permitAll()
                 .requestMatchers("/api/files/{fileName:.+}").permitAll()
+                .requestMatchers("/api/posts/**").permitAll()
                 .requestMatchers("/api/users/createAdmin","/api/users/{userId}/roles", "/api/users/{userId}/roles/{role}").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/users/{userId}").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/users/{userId}").hasRole("ADMIN")
-                .requestMatchers("/api/users/**", "/api/files/**").authenticated()
+                .requestMatchers("/api/posts").hasRole("ADMIN")
+                .requestMatchers("/api/users/**", "/api/files/**", "/api/posts/**").authenticated()
                 .anyRequest().permitAll()
                 )
                 .httpBasic(Customizer.withDefaults())
