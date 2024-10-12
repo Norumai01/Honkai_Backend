@@ -27,14 +27,22 @@ public class UserController {
     // Everyone is whose authenticated can use these http methods.
     // First two methods might be debatable.
 
+    // Might change this request to admin later.
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/id/{userId}")
     public ResponseEntity<User> getUserById(@PathVariable Long userId) {
         return userService.getUserById(userId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/name/{username}")
+    public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
+        return userService.getUserByUsername(username)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

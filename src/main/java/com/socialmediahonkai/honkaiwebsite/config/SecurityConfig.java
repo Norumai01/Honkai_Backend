@@ -43,9 +43,9 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                .requestMatchers("/api/users/createUser", "/api/users/{userId}/profile-pic").permitAll()
-                .requestMatchers("/api/files/{fileName:.+}").permitAll()
-                .requestMatchers("/api/posts/**").permitAll()
+                .requestMatchers("/api/users/createUser").permitAll()
+                .requestMatchers("/api/files/{fileName:.+}", "/api/users/{userId}/profile-pic").hasAnyRole("ADMIN", "CONSUMER")
+                .requestMatchers("/api/posts/**").hasAnyRole("ADMIN", "CONSUMER")
                 .requestMatchers("/api/users/createAdmin","/api/users/{userId}/roles", "/api/users/{userId}/roles/{role}").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/users/{userId}").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/users/{userId}").hasRole("ADMIN")
