@@ -1,12 +1,10 @@
-package com.socialmediahonkai.honkaiwebsite.config;
+package com.johnnynguyen.honkaiwebsite.config;
 
-import com.socialmediahonkai.honkaiwebsite.service.CustomUserDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.johnnynguyen.honkaiwebsite.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -43,9 +41,9 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                .requestMatchers("/api/users/createUser", "/api/users/{userId}/profile-pic").permitAll()
-                .requestMatchers("/api/files/{fileName:.+}").permitAll()
-                .requestMatchers("/api/posts/**").permitAll()
+                .requestMatchers("/api/users/createUser").permitAll()
+                .requestMatchers("/api/files/{fileName:.+}", "/api/users/{userId}/profile-pic").hasAnyRole("ADMIN", "CONSUMER")
+                .requestMatchers("/api/posts/**").hasAnyRole("ADMIN", "CONSUMER")
                 .requestMatchers("/api/users/createAdmin","/api/users/{userId}/roles", "/api/users/{userId}/roles/{role}").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/users/{userId}").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/users/{userId}").hasRole("ADMIN")
@@ -54,6 +52,7 @@ public class SecurityConfig {
                 .anyRequest().permitAll()
                 )
                 // Enable Basic Auth.
+                // TODO: Changes to JWT or OAuth 2.0.
                 .httpBasic(Customizer.withDefaults())
                 // Authorize roles to users.
                 .userDetailsService(userDetailsService);

@@ -1,8 +1,7 @@
-package com.socialmediahonkai.honkaiwebsite.service;
+package com.johnnynguyen.honkaiwebsite.service;
 
-import com.socialmediahonkai.honkaiwebsite.model.User;
-import com.socialmediahonkai.honkaiwebsite.repository.UserRepository;
-import org.hibernate.mapping.Collection;
+import com.johnnynguyen.honkaiwebsite.model.User;
+import com.johnnynguyen.honkaiwebsite.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,7 +10,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Collections;
 import java.util.stream.Collectors;
 
 @Service

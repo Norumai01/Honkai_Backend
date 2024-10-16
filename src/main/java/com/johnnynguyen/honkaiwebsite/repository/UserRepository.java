@@ -1,6 +1,6 @@
-package com.socialmediahonkai.honkaiwebsite.repository;
+package com.johnnynguyen.honkaiwebsite.repository;
 
-import com.socialmediahonkai.honkaiwebsite.model.User;
+import com.johnnynguyen.honkaiwebsite.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;

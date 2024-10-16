@@ -1,6 +1,6 @@
-package com.socialmediahonkai.honkaiwebsite.controller;
+package com.johnnynguyen.honkaiwebsite.controller;
 
-import com.socialmediahonkai.honkaiwebsite.service.FileStorageService;
+import com.johnnynguyen.honkaiwebsite.service.FileStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;

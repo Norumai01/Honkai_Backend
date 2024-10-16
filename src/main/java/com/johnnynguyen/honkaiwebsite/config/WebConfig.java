@@ -1,4 +1,4 @@
-package com.socialmediahonkai.honkaiwebsite.config;
+package com.johnnynguyen.honkaiwebsite.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;

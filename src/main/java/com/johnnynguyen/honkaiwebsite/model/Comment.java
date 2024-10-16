@@ -1,4 +1,4 @@
-package com.socialmediahonkai.honkaiwebsite.model;
+package com.johnnynguyen.honkaiwebsite.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -7,10 +7,10 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
-@Table(name = "Post_Likes")
-public class Like {
+@Table(name = "Post_Comments")
+public class Comment {
 
-    // Tracks how many likes are on the post, by users.
+    // Make comment on post, by users.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,11 +24,14 @@ public class Like {
     private Post post;
 
     @Column(nullable = false)
-    private LocalDateTime likedAt;
+    private String comment;
+
+    @Column(nullable = false)
+    private LocalDateTime commentAt;
 
     // Creating an account, will automatically set to the local time.
     @PrePersist
     protected void onCreate() {
-        this.likedAt= LocalDateTime.now();
+        this.commentAt= LocalDateTime.now();
     }
 }

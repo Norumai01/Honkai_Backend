@@ -1,9 +1,9 @@
-package com.socialmediahonkai.honkaiwebsite.service;
+package com.johnnynguyen.honkaiwebsite.service;
 
-import com.socialmediahonkai.honkaiwebsite.model.Post;
-import com.socialmediahonkai.honkaiwebsite.model.User;
-import com.socialmediahonkai.honkaiwebsite.repository.PostRepository;
-import com.socialmediahonkai.honkaiwebsite.repository.UserRepository;
+import com.johnnynguyen.honkaiwebsite.model.User;
+import com.johnnynguyen.honkaiwebsite.repository.PostRepository;
+import com.johnnynguyen.honkaiwebsite.model.Post;
+import com.johnnynguyen.honkaiwebsite.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +44,7 @@ public class PostService {
         updatePost.forEach((k, v) -> {
             if (v != null) {
                 switch (k) {
+                    case "title" -> post.setTitle((String) v);
                     case "description" -> post.setDescription((String) v);
                     case "imageURL" -> post.setImageURL((String) v);
                     default -> throw new RuntimeException("Invalid key, unable to update post.");
@@ -58,6 +59,7 @@ public class PostService {
     }
 
     // Using the id to find user, the post will be owned by that user.
+    // TODO: Add the upload service to the imageURL. 
     public Post userCreatePost (Long userId, Post post) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));

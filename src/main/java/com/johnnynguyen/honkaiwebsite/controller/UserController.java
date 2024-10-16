@@ -1,9 +1,9 @@
-package com.socialmediahonkai.honkaiwebsite.controller;
+package com.johnnynguyen.honkaiwebsite.controller;
 
-import com.socialmediahonkai.honkaiwebsite.model.User;
-import com.socialmediahonkai.honkaiwebsite.model.Role;
-import com.socialmediahonkai.honkaiwebsite.service.FileStorageService;
-import com.socialmediahonkai.honkaiwebsite.service.UserService;
+import com.johnnynguyen.honkaiwebsite.model.Role;
+import com.johnnynguyen.honkaiwebsite.model.User;
+import com.johnnynguyen.honkaiwebsite.service.FileStorageService;
+import com.johnnynguyen.honkaiwebsite.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,14 +27,22 @@ public class UserController {
     // Everyone is whose authenticated can use these http methods.
     // First two methods might be debatable.
 
+    // Might change this request to admin later.
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/id/{userId}")
     public ResponseEntity<User> getUserById(@PathVariable Long userId) {
         return userService.getUserById(userId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/name/{username}")
+    public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
+        return userService.getUserByUsername(username)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

@@ -1,4 +1,4 @@
-package com.socialmediahonkai.honkaiwebsite.model;
+package com.johnnynguyen.honkaiwebsite.model;
 
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
@@ -21,6 +21,9 @@ public class Post {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @Column(nullable = false, length = 500)
+    private String title;
 
     @Column(nullable = false, length = 2200)
     private String description;

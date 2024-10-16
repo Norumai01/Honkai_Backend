@@ -1,7 +1,5 @@
-package com.socialmediahonkai.honkaiwebsite.model;
+package com.johnnynguyen.honkaiwebsite.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -66,5 +64,10 @@ public class User {
 
     public void removeRole(Role role) {
         roles.remove(role);
+    }
+
+    // TODO: Probably not needed, might be able to count using React.
+    public int getPostsCount() {
+        return posts.size();
     }
 }
