@@ -44,6 +44,7 @@ public class PostService {
         updatePost.forEach((k, v) -> {
             if (v != null) {
                 switch (k) {
+                    case "title" -> post.setTitle((String) v);
                     case "description" -> post.setDescription((String) v);
                     case "imageURL" -> post.setImageURL((String) v);
                     default -> throw new RuntimeException("Invalid key, unable to update post.");

@@ -67,4 +67,9 @@ public class User {
     public void removeRole(Role role) {
         roles.remove(role);
     }
+
+    // TODO: Probably not needed, might be able to count using React.
+    public int getPostsCount() {
+        return posts.size();
+    }
 }

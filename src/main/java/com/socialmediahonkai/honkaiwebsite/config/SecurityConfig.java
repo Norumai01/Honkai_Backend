@@ -54,6 +54,7 @@ public class SecurityConfig {
                 .anyRequest().permitAll()
                 )
                 // Enable Basic Auth.
+                // TODO: Changes to JWT or OAuth 2.0.
                 .httpBasic(Customizer.withDefaults())
                 // Authorize roles to users.
                 .userDetailsService(userDetailsService);

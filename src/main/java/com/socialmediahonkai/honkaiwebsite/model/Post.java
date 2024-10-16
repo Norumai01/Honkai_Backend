@@ -22,6 +22,9 @@ public class Post {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(nullable = false, length = 500)
+    private String title;
+
     @Column(nullable = false, length = 2200)
     private String description;
 
