@@ -1,8 +1,8 @@
-package com.socialmediahonkai.honkaiwebsite.service;
+package com.johnnynguyen.honkaiwebsite.service;
 
-import com.socialmediahonkai.honkaiwebsite.model.Role;
-import com.socialmediahonkai.honkaiwebsite.model.User;
-import com.socialmediahonkai.honkaiwebsite.repository.UserRepository;
+import com.johnnynguyen.honkaiwebsite.model.Role;
+import com.johnnynguyen.honkaiwebsite.model.User;
+import com.johnnynguyen.honkaiwebsite.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;

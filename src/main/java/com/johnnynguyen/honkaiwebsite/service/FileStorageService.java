@@ -1,4 +1,4 @@
-package com.socialmediahonkai.honkaiwebsite.service;
+package com.johnnynguyen.honkaiwebsite.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;

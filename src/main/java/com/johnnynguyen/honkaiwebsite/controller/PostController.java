@@ -1,8 +1,8 @@
-package com.socialmediahonkai.honkaiwebsite.controller;
+package com.johnnynguyen.honkaiwebsite.controller;
 
-import com.socialmediahonkai.honkaiwebsite.model.Post;
-import com.socialmediahonkai.honkaiwebsite.service.PostService;
-import com.socialmediahonkai.honkaiwebsite.service.UserService;
+import com.johnnynguyen.honkaiwebsite.model.Post;
+import com.johnnynguyen.honkaiwebsite.service.PostService;
+import com.johnnynguyen.honkaiwebsite.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

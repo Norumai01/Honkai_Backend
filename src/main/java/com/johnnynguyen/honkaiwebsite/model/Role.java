@@ -1,4 +1,4 @@
-package com.socialmediahonkai.honkaiwebsite.model;
+package com.johnnynguyen.honkaiwebsite.model;
 
 public enum Role {
 

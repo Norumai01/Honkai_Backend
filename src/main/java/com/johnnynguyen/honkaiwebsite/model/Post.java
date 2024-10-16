@@ -1,4 +1,4 @@
-package com.socialmediahonkai.honkaiwebsite.model;
+package com.johnnynguyen.honkaiwebsite.model;
 
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
