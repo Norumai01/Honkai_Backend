@@ -1,6 +1,7 @@
 package com.johnnynguyen.honkaiwebsite.controller;
 
 import com.johnnynguyen.honkaiwebsite.model.Post;
+import com.johnnynguyen.honkaiwebsite.service.FileStorageService;
 import com.johnnynguyen.honkaiwebsite.service.PostService;
 import com.johnnynguyen.honkaiwebsite.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
 import java.util.Map;
@@ -20,6 +23,8 @@ public class PostController {
     private PostService postService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private FileStorageService fileStorageService;
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -32,6 +37,7 @@ public class PostController {
         return ResponseEntity.ok(postService.getPostsByUserId(userId));
     }
 
+    // TODO: Add the upload service to the imageURL.
     @PostMapping("user/{userId}")
     public ResponseEntity<Post> createPost(@PathVariable Long userId, @RequestBody Post post) {
         if (!userService.getUserById(userId).isPresent()) {
@@ -42,6 +48,7 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPost);
     }
 
+    // TODO: Concern about implementing editing post, especially changing images.
     @PutMapping("/{postId}")
     public ResponseEntity<Post> updatePost(@PathVariable Long postId, @RequestBody Map<String,Object> updatedPost) {
         if (!postService.getPostById(postId).isPresent()) {

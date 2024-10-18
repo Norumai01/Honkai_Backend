@@ -59,13 +59,20 @@ public class PostService {
     }
 
     // Using the id to find user, the post will be owned by that user.
-    // TODO: Add the upload service to the imageURL. 
     public Post userCreatePost (Long userId, Post post) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         post.setUser(user);
         return postRepository.save(post);
+    }
+
+    public void addImageToPost(Long postId, String imageURL) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        post.setImageURL(imageURL);
+        postRepository.save(post);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.johnnynguyen.honkaiwebsite.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -51,6 +52,11 @@ public class User {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    // postsCount won't be in the database, but will output in JSON.
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Transient
+    private int postsCount;
+
     // Creating an account, will automatically set to the local time.
     @PrePersist
     protected void onCreate() {
@@ -67,7 +73,9 @@ public class User {
     }
 
     // TODO: Probably not needed, might be able to count using React.
+    @JsonProperty("postsCount")
+    // Accepts null inputs, so it doesn't reflect any changes during input calls from API.
     public int getPostsCount() {
-        return posts.size();
+        return posts != null ? posts.size() : 0;
     }
 }

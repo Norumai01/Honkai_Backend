@@ -25,7 +25,7 @@ public class UserController {
     private FileStorageService fileStorageService;
 
     // Everyone is whose authenticated can use these http methods.
-    // First two methods might be debatable.
+    // TODO: First two methods might be debatable.
 
     // Might change this request to admin later.
     @GetMapping
@@ -63,6 +63,7 @@ public class UserController {
 
     // Upload and set user profile picture with its URL attribute.
     // Testing API, the key is the requestParam -> profile.
+    // TODO: Can possibly reduce this, with added usage from FileController.
     @PostMapping("/{userId}/profile-pic")
     public ResponseEntity<User> changeProfilePic(@PathVariable Long userId, @RequestParam("profile") MultipartFile profile) {
         if (!userService.getUserById(userId).isPresent()) {
