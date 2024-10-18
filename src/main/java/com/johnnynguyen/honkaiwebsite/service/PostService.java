@@ -37,20 +37,20 @@ public class PostService {
         return postRepository.save(post);
     }
 
-    public Post updatePost(Long id, Map<String,Object> updatePost) {
+    public Post updatePost(Long id, String title, String description, String imageURL) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
-        updatePost.forEach((k, v) -> {
-            if (v != null) {
-                switch (k) {
-                    case "title" -> post.setTitle((String) v);
-                    case "description" -> post.setDescription((String) v);
-                    case "imageURL" -> post.setImageURL((String) v);
-                    default -> throw new RuntimeException("Invalid key, unable to update post.");
-                }
-            }
-        });
+        if (title != null && !title.isEmpty()) {
+            post.setTitle(title);
+        }
+        if (description != null && !description.isEmpty()) {
+            post.setDescription(description);
+        }
+        if (imageURL != null && !imageURL.isEmpty()) {
+            post.setImageURL(imageURL);
+        }
+
         return postRepository.save(post);
     }
 
@@ -59,11 +59,12 @@ public class PostService {
     }
 
     // Using the id to find user, the post will be owned by that user.
-    public Post userCreatePost (Long userId, Post post) {
+    public Post userCreatePost (Long userId, Post post, String imageURL) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         post.setUser(user);
+        post.setImageURL(imageURL);
         return postRepository.save(post);
     }
 

@@ -39,24 +39,60 @@ public class PostController {
 
     // TODO: Add the upload service to the imageURL.
     @PostMapping("user/{userId}")
-    public ResponseEntity<Post> createPost(@PathVariable Long userId, @RequestBody Post post) {
+    public ResponseEntity<Post> createPost(@PathVariable Long userId, @RequestParam String title, @RequestParam String description, @RequestParam(name = "postImage", required = false) MultipartFile image) {
         if (!userService.getUserById(userId).isPresent()) {
             return ResponseEntity.notFound().build();
         }
 
-        Post createdPost = postService.userCreatePost(userId, post);
+        String imageURL = null;
+        if (image != null && !image.isEmpty()) {
+            // Allowed file types
+            final List<String> allowMimeTypes = List.of("image/jpeg", "image/jpg", "image/png", "image/webp");
+            String fileType = image.getContentType();
+            if (!allowMimeTypes.contains(fileType) || fileType == null) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            String fileName = fileStorageService.storeFile(image);
+            imageURL = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("api/files/")
+                    .path(fileName)
+                    .toUriString();
+        }
+
+        Post post = new Post();
+        post.setTitle(title);
+        post.setDescription(description);
+        post.setImageURL(imageURL);
+        Post createdPost = postService.userCreatePost(userId, post, imageURL);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPost);
     }
 
     // TODO: Concern about implementing editing post, especially changing images.
     @PutMapping("/{postId}")
-    public ResponseEntity<Post> updatePost(@PathVariable Long postId, @RequestBody Map<String,Object> updatedPost) {
+    public ResponseEntity<Post> updatePost(@PathVariable Long postId, @RequestParam(required = false) String title, @RequestParam(required = false) String description, @RequestParam(required = false) MultipartFile image) {
         if (!postService.getPostById(postId).isPresent()) {
             return ResponseEntity.notFound().build();
         }
 
-        Post post = postService.updatePost(postId, updatedPost);
-        return ResponseEntity.ok(post);
+        String imageURL = null;
+        if (image != null && !image.isEmpty()) {
+            // Allowed file types
+            final List<String> allowMimeTypes = List.of("image/jpeg", "image/jpg", "image/png", "image/webp");
+            String fileType = image.getContentType();
+            if (!allowMimeTypes.contains(fileType) || fileType == null) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            String fileName = fileStorageService.storeFile(image);
+            imageURL = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("api/files/")
+                    .path(fileName)
+                    .toUriString();
+        }
+
+        Post upddatedPost = postService.updatePost(postId, title, description, imageURL);
+        return ResponseEntity.ok(upddatedPost);
     }
 
     @DeleteMapping("/{postId}")
