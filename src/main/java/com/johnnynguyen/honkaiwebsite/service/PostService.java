@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Map;
 
 @Service
 public class PostService {
@@ -19,6 +18,9 @@ public class PostService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private FileStorageService fileStorageService;
 
     public List<Post> getAllPosts() {
         return postRepository.findAll();
@@ -33,9 +35,9 @@ public class PostService {
     }
 
     // Could be thrown away.
-    public Post createPost(Post post) {
-        return postRepository.save(post);
-    }
+//    public Post createPost(Post post) {
+//        return postRepository.save(post);
+//    }
 
     public Post updatePost(Long id, String title, String description, String imageURL) {
         Post post = postRepository.findById(id)
@@ -48,13 +50,24 @@ public class PostService {
             post.setDescription(description);
         }
         if (imageURL != null && !imageURL.isEmpty()) {
+            String oldPostImageURL = post.getImageURL();
+
             post.setImageURL(imageURL);
+            fileStorageService.deleteFile(oldPostImageURL);
         }
 
         return postRepository.save(post);
     }
 
     public void deletePost(Long id) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        // Ensures any photos from deleted post is deleted.
+        if (post.getImageURL() != null) {
+            fileStorageService.deleteFile(post.getImageURL());
+        }
+
         postRepository.deleteById(id);
     }
 
@@ -68,6 +81,7 @@ public class PostService {
         return postRepository.save(post);
     }
 
+    // TODO: May consider deleting this.
     public void addImageToPost(Long postId, String imageURL) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));

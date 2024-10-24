@@ -49,25 +49,31 @@ public class FileController {
                 .body(resource);
     }
 
+    // May consider deleting this.
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
-        // Allowed file types of an image.
-        final List<String> allowMimeTypes = List.of("image/jpeg", "image/jpg", "image/png", "image/webp");
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("Please select a file");
+        }
+        // Allow specific file types of an image.
         String fileType = file.getContentType();
-        if (!allowMimeTypes.contains(fileType) || fileType == null) {
+        if (!fileStorageService.checkIfFileValid(fileType)) {
             return ResponseEntity.badRequest().body("Unsupported file type");
         }
 
-        String fileName = fileStorageService.storeFile(file);
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/api/files/")
-                .path(fileName)
-                .toUriString();
+        try {
+            String fileName = fileStorageService.storeFile(file);
+            String fileDownloadUri = fileStorageService.generateFileDownloadURI(fileName);
 
-        return ResponseEntity.ok(fileDownloadUri);
+            return ResponseEntity.ok(fileDownloadUri);
+        }
+        catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("Failed to store file: " + e.getMessage());
+        }
     }
 
     // Set images to specific postId.
+    // TODO: May consider deleting this.
     // TODO: In React, you would use two APIs responses.
     @PutMapping("/post/{postId}")
     public ResponseEntity<Void> addImageToPost(@PathVariable Long postId, @RequestBody Map<String, String> file) {

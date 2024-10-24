@@ -37,7 +37,7 @@ public class PostController {
         return ResponseEntity.ok(postService.getPostsByUserId(userId));
     }
 
-    // TODO: Add the upload service to the imageURL.
+    // TODO: Polish React UI/UX experience rather than this function.
     @PostMapping("user/{userId}")
     public ResponseEntity<Post> createPost(@PathVariable Long userId, @RequestParam String title, @RequestParam String description, @RequestParam(name = "postImage", required = false) MultipartFile image) {
         if (!userService.getUserById(userId).isPresent()) {
@@ -46,18 +46,13 @@ public class PostController {
 
         String imageURL = null;
         if (image != null && !image.isEmpty()) {
-            // Allowed file types
-            final List<String> allowMimeTypes = List.of("image/jpeg", "image/jpg", "image/png", "image/webp");
             String fileType = image.getContentType();
-            if (!allowMimeTypes.contains(fileType) || fileType == null) {
+            if (!fileStorageService.checkIfFileValid(fileType)) {
                 return ResponseEntity.badRequest().build();
             }
 
             String fileName = fileStorageService.storeFile(image);
-            imageURL = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("api/files/")
-                    .path(fileName)
-                    .toUriString();
+            imageURL = fileStorageService.generateFileDownloadURI(fileName);
         }
 
         Post post = new Post();
@@ -68,7 +63,7 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPost);
     }
 
-    // TODO: Concern about implementing editing post, especially changing images.
+    // TODO: Polish React UI/UX experience rather than this function.
     @PutMapping("/{postId}")
     public ResponseEntity<Post> updatePost(@PathVariable Long postId, @RequestParam(required = false) String title, @RequestParam(required = false) String description, @RequestParam(required = false) MultipartFile image) {
         if (!postService.getPostById(postId).isPresent()) {
@@ -77,22 +72,17 @@ public class PostController {
 
         String imageURL = null;
         if (image != null && !image.isEmpty()) {
-            // Allowed file types
-            final List<String> allowMimeTypes = List.of("image/jpeg", "image/jpg", "image/png", "image/webp");
             String fileType = image.getContentType();
-            if (!allowMimeTypes.contains(fileType) || fileType == null) {
+            if (!fileStorageService.checkIfFileValid(fileType)) {
                 return ResponseEntity.badRequest().build();
             }
 
             String fileName = fileStorageService.storeFile(image);
-            imageURL = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("api/files/")
-                    .path(fileName)
-                    .toUriString();
+            imageURL = fileStorageService.generateFileDownloadURI(fileName);
         }
 
-        Post upddatedPost = postService.updatePost(postId, title, description, imageURL);
-        return ResponseEntity.ok(upddatedPost);
+        Post updatedPost = postService.updatePost(postId, title, description, imageURL);
+        return ResponseEntity.ok(updatedPost);
     }
 
     @DeleteMapping("/{postId}")

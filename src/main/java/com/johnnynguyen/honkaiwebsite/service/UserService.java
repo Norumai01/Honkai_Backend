@@ -1,5 +1,6 @@
 package com.johnnynguyen.honkaiwebsite.service;
 
+import com.johnnynguyen.honkaiwebsite.model.Post;
 import com.johnnynguyen.honkaiwebsite.model.Role;
 import com.johnnynguyen.honkaiwebsite.model.User;
 import com.johnnynguyen.honkaiwebsite.repository.UserRepository;
@@ -18,6 +19,8 @@ public class UserService {
     private UserRepository userRepository;
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    private FileStorageService fileStorageService;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -71,6 +74,22 @@ public class UserService {
     }
 
     public void deleteUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Ensures the photo of the deleted user is deleted.
+        if (user.getProfilePictureURL() != null) {
+            fileStorageService.deleteFile(user.getProfilePictureURL());
+        }
+
+        // Delete all post images related the user.
+        if (user.getPosts() != null) {
+            user.getPosts().stream()
+                    .filter(post -> post.getImageURL() != null)
+                    .map(Post::getImageURL)
+                    .forEach(post -> fileStorageService.deleteFile(post));
+        }
+
         userRepository.deleteById(id);
     }
 
@@ -112,6 +131,12 @@ public class UserService {
     public User updateProfilePicture(Long userId, String profilePictureURL) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Delete old profile picture, if exists.
+        String oldProfilePictureURL = user.getProfilePictureURL();
+        if (oldProfilePictureURL != null && !oldProfilePictureURL.isEmpty()) {
+            fileStorageService.deleteFile(oldProfilePictureURL);
+        }
 
         user.setProfilePictureURL(profilePictureURL);
         return userRepository.save(user);
