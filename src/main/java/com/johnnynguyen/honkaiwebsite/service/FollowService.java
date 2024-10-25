@@ -19,7 +19,7 @@ public class FollowService {
     @Autowired
     private UserFollowingRepository userFollowingRepository;
 
-    private void followUser(Long userId, String followingUsername) {
+    public void followUser(Long userId, String followingUsername) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -31,7 +31,7 @@ public class FollowService {
             throw new RuntimeException("Users cannot follow themselves.");
         }
 
-        if (userFollowingRepository.findUserFollowerIdAndUserFollowingId(
+        if (userFollowingRepository.findByFollowerIdAndFollowingId(
                 userId, followingUser.getId()).isPresent()) {
             throw new RuntimeException("User is already following this user.");
         }
@@ -51,7 +51,7 @@ public class FollowService {
             throw new RuntimeException("Users cannot unfollow themselves.");
         }
 
-        UserFollowing userFollowing = userFollowingRepository.findUserFollowerIdAndUserFollowingId(userId, followingUser.getId())
+        UserFollowing userFollowing = userFollowingRepository.findByFollowerIdAndFollowingId(userId, followingUser.getId())
                 .orElseThrow(() -> new RuntimeException("Follow relationship not found."));
 
         userFollowingRepository.delete(userFollowing);
@@ -62,7 +62,7 @@ public class FollowService {
         User following = userRepository.findByUsername(followingUsername)
                 .orElseThrow(() -> new RuntimeException("User, being follow, not found."));
 
-        return userFollowingRepository.findUserFollowerIdAndUserFollowingId(
+        return userFollowingRepository.findByFollowerIdAndFollowingId(
                 userId, following.getId()).isPresent();
     }
 

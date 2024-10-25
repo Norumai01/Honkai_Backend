@@ -12,7 +12,7 @@ import java.util.List;
 public interface UserFollowingRepository extends JpaRepository<UserFollowing, Long> {
 
     // Find if a relationship exists.
-    Optional<UserFollowing> findUserFollowerIdAndUserFollowingId(Long FollowerId, Long FollowingId);
+    Optional<UserFollowing> findByFollowerIdAndFollowingId(Long FollowerId, Long FollowingId);
 
     // Get all users where this user is being followed by (the followers).
     List<UserFollowing> findByFollowingId(Long FollowingId);
@@ -21,5 +21,6 @@ public interface UserFollowingRepository extends JpaRepository<UserFollowing, Lo
     List<UserFollowing> findByFollowerId(Long FollowerId);
 
     // Delete a relationship.
-    void deleteByUserFollowerIdAndUserFollowingId(Long FollowerId, Long FollowingId);
+    // TODO: Consider deleting, if not needed.
+    void deleteByFollowerIdAndFollowingId(Long FollowerId, Long FollowingId);
 }

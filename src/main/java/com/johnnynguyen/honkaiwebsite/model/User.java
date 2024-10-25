@@ -74,12 +74,14 @@ public class User {
 
     /* Followers and Followings */
 
-    @JsonManagedReference
-    @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<UserFollowing> followers;
-
+    // List of users following this user.
     @JsonManagedReference
     @OneToMany(mappedBy = "following", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<UserFollowing> followers;
+
+    // List of users this user follows.
+    @JsonManagedReference
+    @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<UserFollowing> followings;
 
     // Add these methods to get the counts
