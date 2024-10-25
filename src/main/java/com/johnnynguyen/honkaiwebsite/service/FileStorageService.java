@@ -5,13 +5,14 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -63,4 +64,60 @@ public class FileStorageService {
         }
     }
 
+    // Generate download URI
+    public String generateFileDownloadURI(String fileName) {
+        return ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/api/files/")
+                .path(fileName)
+                .toUriString();
+    }
+
+    // Check validity of the uploaded file.
+    public Boolean checkIfFileValid(String fileType) {
+        // Check for null.
+        if (fileType == null || fileType.isEmpty()) {
+            return false;
+        }
+
+        // Allowed file types.
+        final List<String> allowMimeTypes = List.of(
+                "image/jpeg",     // .jpg, .jpeg
+                "image/jpg",      // Alternative MIME type for JPEG
+                "image/png",      // .png
+                "image/webp",     // .webp
+                "image/gif",      // .gif
+                "image/bmp",      // .bmp
+                "image/tiff",     // .tiff, .tif
+                "image/svg+xml",  // .svg
+                "image/heic",     // .heic (common on iOS devices)
+                "image/heif",     // .heif (common on iOS devices)
+                "image/avif"      // .avif (newer format with good compression)
+        );
+
+        /*
+        TODO: HEIC may need additional server-side processing libraries.
+        TODO: May need to limit sizes for each file types.
+        TODO: SVG may be consider, but need some security validation as they contains executable code.
+        */
+
+        return allowMimeTypes.contains(fileType.toLowerCase());
+    }
+
+    // Delete any old files if changed (i.e. profile picture change).
+    public void deleteFile(String fileUrl) {
+        if (fileUrl == null || fileUrl.isEmpty()) {
+            return;
+        }
+
+        try {
+            // Extract fileName from URL.
+            String fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+            Path targetLocation = this.fileStorageLocation.resolve(fileName).normalize();
+
+            Files.deleteIfExists(targetLocation);
+        }
+        catch (IOException ex) {
+            throw new RuntimeException("Failed to delete file: " + fileUrl, ex);
+        }
+    }
 }

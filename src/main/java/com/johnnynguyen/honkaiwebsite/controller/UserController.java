@@ -57,6 +57,7 @@ public class UserController {
         if (userService.existsByEmail(user.getEmail())) {
             return ResponseEntity.badRequest().build();
         }
+
         User createdUser = userService.createUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
@@ -70,21 +71,24 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
 
-        // Allowed file types
-        final List<String> allowMimeTypes = List.of("image/jpeg", "image/jpg", "image/png", "image/webp");
+        if (profile.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
         String fileType = profile.getContentType();
-        if (!allowMimeTypes.contains(fileType) || fileType == null) {
+        if (!fileStorageService.checkIfFileValid(fileType)) {
             return ResponseEntity.badRequest().build();
         }
 
-        String fileName = fileStorageService.storeFile(profile);
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("api/files/")
-                .path(fileName)
-                .toUriString();
+        try {
+            String fileName = fileStorageService.storeFile(profile);
+            String fileDownloadUri = fileStorageService.generateFileDownloadURI(fileName);
 
-        User updatedUser = userService.updateProfilePicture(userId, fileDownloadUri);
-        return ResponseEntity.ok(updatedUser);
+            User updatedUser = userService.updateProfilePicture(userId, fileDownloadUri);
+            return ResponseEntity.ok(updatedUser);
+        }
+        catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     // API Endpoints usable by Admin Role.

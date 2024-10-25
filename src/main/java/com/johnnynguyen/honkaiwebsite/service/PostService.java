@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Map;
 
 @Service
 public class PostService {
@@ -19,6 +18,9 @@ public class PostService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private FileStorageService fileStorageService;
 
     public List<Post> getAllPosts() {
         return postRepository.findAll();
@@ -33,40 +35,53 @@ public class PostService {
     }
 
     // Could be thrown away.
-    public Post createPost(Post post) {
-        return postRepository.save(post);
-    }
+//    public Post createPost(Post post) {
+//        return postRepository.save(post);
+//    }
 
-    public Post updatePost(Long id, Map<String,Object> updatePost) {
+    public Post updatePost(Long id, String title, String description, String imageURL) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
-        updatePost.forEach((k, v) -> {
-            if (v != null) {
-                switch (k) {
-                    case "title" -> post.setTitle((String) v);
-                    case "description" -> post.setDescription((String) v);
-                    case "imageURL" -> post.setImageURL((String) v);
-                    default -> throw new RuntimeException("Invalid key, unable to update post.");
-                }
-            }
-        });
+        if (title != null && !title.isEmpty()) {
+            post.setTitle(title);
+        }
+        if (description != null && !description.isEmpty()) {
+            post.setDescription(description);
+        }
+        if (imageURL != null && !imageURL.isEmpty()) {
+            String oldPostImageURL = post.getImageURL();
+
+            post.setImageURL(imageURL);
+            fileStorageService.deleteFile(oldPostImageURL);
+        }
+
         return postRepository.save(post);
     }
 
     public void deletePost(Long id) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        // Ensures any photos from deleted post is deleted.
+        if (post.getImageURL() != null) {
+            fileStorageService.deleteFile(post.getImageURL());
+        }
+
         postRepository.deleteById(id);
     }
 
     // Using the id to find user, the post will be owned by that user.
-    public Post userCreatePost (Long userId, Post post) {
+    public Post userCreatePost (Long userId, Post post, String imageURL) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         post.setUser(user);
+        post.setImageURL(imageURL);
         return postRepository.save(post);
     }
 
+    // TODO: May consider deleting this.
     public void addImageToPost(Long postId, String imageURL) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));

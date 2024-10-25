@@ -37,26 +37,52 @@ public class PostController {
         return ResponseEntity.ok(postService.getPostsByUserId(userId));
     }
 
-    // TODO: Add the upload service to the imageURL.
+    // TODO: Polish React UI/UX experience rather than this function.
     @PostMapping("user/{userId}")
-    public ResponseEntity<Post> createPost(@PathVariable Long userId, @RequestBody Post post) {
+    public ResponseEntity<Post> createPost(@PathVariable Long userId, @RequestParam String title, @RequestParam String description, @RequestParam(name = "postImage", required = false) MultipartFile image) {
         if (!userService.getUserById(userId).isPresent()) {
             return ResponseEntity.notFound().build();
         }
 
-        Post createdPost = postService.userCreatePost(userId, post);
+        String imageURL = null;
+        if (image != null && !image.isEmpty()) {
+            String fileType = image.getContentType();
+            if (!fileStorageService.checkIfFileValid(fileType)) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            String fileName = fileStorageService.storeFile(image);
+            imageURL = fileStorageService.generateFileDownloadURI(fileName);
+        }
+
+        Post post = new Post();
+        post.setTitle(title);
+        post.setDescription(description);
+        post.setImageURL(imageURL);
+        Post createdPost = postService.userCreatePost(userId, post, imageURL);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPost);
     }
 
-    // TODO: Concern about implementing editing post, especially changing images.
+    // TODO: Polish React UI/UX experience rather than this function.
     @PutMapping("/{postId}")
-    public ResponseEntity<Post> updatePost(@PathVariable Long postId, @RequestBody Map<String,Object> updatedPost) {
+    public ResponseEntity<Post> updatePost(@PathVariable Long postId, @RequestParam(required = false) String title, @RequestParam(required = false) String description, @RequestParam(required = false) MultipartFile image) {
         if (!postService.getPostById(postId).isPresent()) {
             return ResponseEntity.notFound().build();
         }
 
-        Post post = postService.updatePost(postId, updatedPost);
-        return ResponseEntity.ok(post);
+        String imageURL = null;
+        if (image != null && !image.isEmpty()) {
+            String fileType = image.getContentType();
+            if (!fileStorageService.checkIfFileValid(fileType)) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            String fileName = fileStorageService.storeFile(image);
+            imageURL = fileStorageService.generateFileDownloadURI(fileName);
+        }
+
+        Post updatedPost = postService.updatePost(postId, title, description, imageURL);
+        return ResponseEntity.ok(updatedPost);
     }
 
     @DeleteMapping("/{postId}")
