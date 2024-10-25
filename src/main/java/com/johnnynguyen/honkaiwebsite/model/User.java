@@ -1,6 +1,5 @@
 package com.johnnynguyen.honkaiwebsite.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -38,30 +37,13 @@ public class User {
     @Column(length = 500)
     private String bio;
 
+    /* Roles and getter/setter */
+
     // They can have more than one role.
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     private Set<Role> roles = new HashSet<>();
-
-    // Using Post entity, we will manage how it output on JSON.
-    @JsonManagedReference
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Post> posts;
-
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    // postsCount won't be in the database, but will output in JSON.
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @Transient
-    private int postsCount;
-
-    // Creating an account, will automatically set to the local time.
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
 
     // Custom Methods:
     public void addRole(Role role) {
@@ -72,10 +54,56 @@ public class User {
         roles.remove(role);
     }
 
-    // TODO: Probably not needed, might be able to count using React.
+    /* Posts attribute and getters */
+
+    // Using Post entity, we will manage how it output on JSON.
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Post> posts;
+
+    // postsCount won't be in the database, but will output in JSON.
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Transient
+    private int postsCount;
+
     @JsonProperty("postsCount")
     // Accepts null inputs, so it doesn't reflect any changes during input calls from API.
     public int getPostsCount() {
         return posts != null ? posts.size() : 0;
     }
+
+    /* Followers and Followings */
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<UserFollowing> followers;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "following", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<UserFollowing> followings;
+
+    // Add these methods to get the counts
+    @JsonProperty("followersCount")
+    @Transient
+    public int getFollowersCount() {
+        return followers != null ? followers.size() : 0;
+    }
+
+    @JsonProperty("followingsCount")
+    @Transient
+    public int getFollowingCount() {
+        return followings != null ? followings.size() : 0;
+    }
+
+    /* Date created's attribute */
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    // Creating an account, will automatically set to the local time.
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
 }

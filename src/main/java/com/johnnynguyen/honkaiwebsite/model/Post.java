@@ -12,11 +12,11 @@ import java.util.List;
 @Table(name = "Posts")
 public class Post {
 
-    // Holds the entity, serving for user posts.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Prevents infinite recursion with User.
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

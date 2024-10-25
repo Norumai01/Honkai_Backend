@@ -34,6 +34,7 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
+    // TODO: Consider removing this.
     public Optional<User> getUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
