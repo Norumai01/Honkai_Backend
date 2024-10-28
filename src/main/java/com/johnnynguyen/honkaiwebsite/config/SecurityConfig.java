@@ -64,7 +64,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://localhost:3000"); // Add your React app's URL
+        //config.addAllowedOrigin("http://localhost:3000"); // Desktop PC
+        config.addAllowedOrigin("http://localhost:3001"); // Add your React app's URL. Laptop
         config.setAllowedHeaders(List.of("Content-Type", "Authorization", "Accept"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
 
