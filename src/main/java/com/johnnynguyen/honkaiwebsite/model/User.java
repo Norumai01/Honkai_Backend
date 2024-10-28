@@ -57,7 +57,7 @@ public class User {
     /* Posts attribute and getters */
 
     // Using Post entity, we will manage how it output on JSON.
-    @JsonManagedReference
+    @JsonManagedReference("user-posts")
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Post> posts;
 
@@ -75,12 +75,12 @@ public class User {
     /* Followers and Followings */
 
     // List of users following this user.
-    @JsonManagedReference
+    @JsonManagedReference("user-followers")
     @OneToMany(mappedBy = "following", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<UserFollowing> followers;
 
     // List of users this user follows.
-    @JsonManagedReference
+    @JsonManagedReference("user-followings")
     @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<UserFollowing> followings;
 

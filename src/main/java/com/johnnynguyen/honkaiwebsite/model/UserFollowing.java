@@ -16,12 +16,12 @@ public class UserFollowing {
     private Long id;
 
     // Ignoring any JSON output related to User, avoiding reoccurrence.
-    @JsonBackReference
+    @JsonBackReference("user-followings")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "follower_id", nullable = false)
     private User follower;
 
-    @JsonBackReference
+    @JsonBackReference("user-followers")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "following_id", nullable = false)
     private User following;
