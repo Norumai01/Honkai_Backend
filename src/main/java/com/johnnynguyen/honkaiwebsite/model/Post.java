@@ -17,7 +17,7 @@ public class Post {
     private Long id;
 
     // Prevents infinite recursion with User.
-    @JsonBackReference
+    @JsonBackReference("user-posts")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
