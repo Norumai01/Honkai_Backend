@@ -97,6 +97,18 @@ public class User {
         return followings != null ? followings.size() : 0;
     }
 
+    /* Likes */
+
+    @JsonManagedReference("user-likes")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Like> likes;
+
+    /* Comments */
+
+    @JsonManagedReference("user-comments")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Comment> comments;
+
     /* Date created's attribute */
 
     @Column(nullable = false, updatable = false)
