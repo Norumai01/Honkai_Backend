@@ -31,15 +31,45 @@ public class Post {
     @Column(length = 500)
     private String imageURL;
 
-    // TODO: Implement after bootcamp.
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    /* Comments */
+
+    @JsonManagedReference("post-comments")
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Comment> comments;
 
-    // TODO: Implement after bootcamp.
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty("commentsCount")
+    @Transient
+    public int getCommentsCount() {
+        return comments != null ? comments.size() : 0;
+    }
+
+    public void addComment(Comment comment) {
+        comments.add(comment);
+    }
+
+    public void removeComment(Comment comment) {
+        comments.remove(comment);
+    }
+
+    /* Likes */
+
+    @JsonManagedReference("post-likes")
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Like> likes;
+
+    @JsonProperty("likesCount")
+    @Transient
+    public int getLikesCount() {
+        return likes != null ? likes.size() : 0;
+    }
+
+    public void addLike(Like like) {
+        likes.add(like);
+    }
+
+    public void removeLike(Like like) {
+        likes.remove(like);
+    }
 
     @Column(nullable = false)
     private LocalDateTime postAt;
