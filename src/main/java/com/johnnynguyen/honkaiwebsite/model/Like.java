@@ -1,6 +1,7 @@
 package com.johnnynguyen.honkaiwebsite.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -28,6 +29,12 @@ public class Like {
 
     @Column(nullable = false)
     private LocalDateTime likedAt;
+
+    // Get the username that liked the post.
+    @JsonProperty("username")
+    public String getUserUsername() {
+        return user != null ? user.getUsername() : null;
+    }
 
     // Creating an account, will automatically set to the local time.
     @PrePersist

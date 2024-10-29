@@ -1,5 +1,6 @@
 package com.johnnynguyen.honkaiwebsite.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -99,12 +100,14 @@ public class User {
 
     /* Likes */
 
+    @JsonIgnore     // To not appear as part of user.
     @JsonManagedReference("user-likes")
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Like> likes;
 
     /* Comments */
 
+    @JsonIgnore     // To not appear as part of user.
     @JsonManagedReference("user-comments")
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Comment> comments;

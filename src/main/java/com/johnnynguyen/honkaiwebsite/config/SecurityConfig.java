@@ -43,12 +43,12 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                 .requestMatchers("/api/users/createUser").permitAll()
                 .requestMatchers("/api/files/{fileName:.+}", "/api/users/{userId}/profile-pic").hasAnyRole("ADMIN", "CONSUMER")
-                .requestMatchers("/api/posts/**").hasAnyRole("ADMIN", "CONSUMER")
+                .requestMatchers("/api/posts/**", "/api/follow/**", "/api/likes/**", "/api/comments/**").hasAnyRole("ADMIN", "CONSUMER")
                 .requestMatchers("/api/users/createAdmin","/api/users/{userId}/roles", "/api/users/{userId}/roles/{role}").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/users/{userId}").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/users/{userId}").hasRole("ADMIN")
                 .requestMatchers("/api/posts").hasRole("ADMIN")
-                .requestMatchers("/api/users/**", "/api/files/**", "/api/posts/**").authenticated()
+                .requestMatchers("/api/users/**", "/api/files/**", "/api/posts/**", "/api/follow/**").authenticated()
                 .anyRequest().permitAll()
                 )
                 // Enable Basic Auth.

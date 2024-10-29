@@ -125,6 +125,16 @@ spring.servlet.multipart.max-request-size=##MB
 - `PUT /api/posts/{postId}` - Update post
 - `DELETE /api/posts/{postId}` - Delete post
 
+### Likes
+- `POST /api/likes/user/{userId}/like/{postId}` - User like a post.
+- `DELETE /api/likes/user/{userId}/unlike/{postId}` - User unlike a post, that's been liked.
+- `GET /api/likes/user/{userId}/like/{postId}` - Check if user like this post.
+
+### Comments
+- `POST /api/comments/user/{userId}/comment/{postId}` - User comment on a post.
+- `DELETE /api/comments/{commentId}/user/{userId}` - Only the user (themselves) can delete their comment.
+- `GET /api/comments/post/{postId}` - Check the user's comment on this post, if exists.
+
 ### Follow
 - `POST /api/follow/user/{userId}/follow/{username}` - Current user will follow a targeted user.
 - `GET /api/follow/user/{username}/followers` - Get list of users following this user.
@@ -151,7 +161,7 @@ spring.servlet.multipart.max-request-size=##MB
 - [x] Implement file upload system
 - [x] Add user roles and permissions
 - [x] Create post management system
-- [ ] Implement comments and likes system
+- [x] Implement comments and likes system
 - [ ] Add pagination for posts and comments
 - [ ] Implement user search functionality
 - [ ] Add post categories/tags
